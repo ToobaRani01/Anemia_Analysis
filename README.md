@@ -42,6 +42,8 @@ Use the provided [Jupyter Notebook](notebooks/final_training.ipynb) to train the
 streamlit run app.py
 ```
 
+**Live Demo:** https://anemiaanalysis-toobarani.streamlit.app/
+
 ## Normal Hemoglobin Ranges (g/dL)
 Diagnosis is based on the following clinical ranges. Values below the minimum indicate anemia, while values exceeding the maximum are flagged as High/Severe.
 
