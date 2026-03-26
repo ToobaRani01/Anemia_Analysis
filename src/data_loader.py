@@ -463,25 +463,31 @@ class AnemiaDataset(tf.keras.utils.Sequence):
 
     def __init__(self, df: pd.DataFrame, batch_size: int = 16,
                  target_col: str = "hemoglobin",
-                 augment: bool = False, shuffle: bool = True, **kwargs):
+                 augment: bool = False, shuffle: bool = True, 
+                 use_weights: bool = False, **kwargs):
         super().__init__(**kwargs)
-        self.df         = df.reset_index(drop=True)
-        self.batch_size = batch_size
-        self.target_col = target_col
-        self.augment    = augment
-        self.shuffle    = shuffle
-        self.indices    = np.arange(len(self.df))
+        self.df          = df.reset_index(drop=True)
+        self.batch_size  = batch_size
+        self.target_col  = target_col
+        self.augment     = augment
+        self.shuffle     = shuffle
+        self.use_weights = use_weights
+        self.indices     = np.arange(len(self.df))
         if self.shuffle:
             np.random.shuffle(self.indices)
 
-        # Augmentation pipeline
+        # Augmentation pipeline: Increased for small dataset
         self.aug = ImageDataGenerator(
-            rotation_range=15,
-            width_shift_range=0.1,
-            height_shift_range=0.1,
+            rotation_range=20,
+            width_shift_range=0.15,
+            height_shift_range=0.15,
+            shear_range=0.1,
+            zoom_range=0.2,
             horizontal_flip=True,
-            brightness_range=[0.8, 1.2],
-            zoom_range=0.1,
+            vertical_flip=False,
+            fill_mode='nearest',
+            brightness_range=[0.7, 1.3],
+            channel_shift_range=20.0
         ) if augment else None
 
     def __len__(self):
@@ -494,6 +500,7 @@ class AnemiaDataset(tf.keras.utils.Sequence):
         imgs      = {t: [] for t in IMAGE_TYPES}
         metas     = []
         hgbs      = []
+        weights   = []
 
         for _, row in batch.iterrows():
             # Robust image selection: try first type, then fall back to others if needed
@@ -519,6 +526,10 @@ class AnemiaDataset(tf.keras.utils.Sequence):
             # Meta: age/100, gender 0/1
             metas.append([float(row["age"]) / 100.0, float(row["gender"])])
             hgbs.append(float(row[self.target_col]))
+            
+            # Clinical Weighting: Penalize errors in anemic range more heavily
+            if self.use_weights:
+                weights.append(4.0 if float(row["hemoglobin"]) < 11.5 else 1.0)
 
         img_arrays = [np.array(imgs[t], dtype=np.float32) for t in IMAGE_TYPES]
         meta_array = np.array(metas, dtype=np.float32)
@@ -528,9 +539,12 @@ class AnemiaDataset(tf.keras.utils.Sequence):
         if USE_MULTI_INPUT:
             inputs = {f"img_{t}": img_arrays[i] for i, t in enumerate(IMAGE_TYPES)}
             inputs["meta_input"] = meta_array
-            return inputs, hgb_array
         else:
-            return {"image_input": img_arrays[0], "meta_input": meta_array}, hgb_array
+            inputs = {"image_input": img_arrays[0], "meta_input": meta_array}
+
+        if self.use_weights:
+            return inputs, hgb_array, np.array(weights, dtype=np.float32)
+        return inputs, hgb_array
 
     def on_epoch_end(self):
         if self.shuffle:

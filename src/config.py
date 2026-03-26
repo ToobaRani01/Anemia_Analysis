@@ -53,18 +53,40 @@ RANDOM_SEED     = 42
 
 # ─────────────────────────────────────────────
 # WHO ANEMIA THRESHOLDS  (g/dL)
-# ─────────────────────────────────────────────
+# Updated based on clinical guidelines provided:
+# - Children 6-59m & Pregnant: Normal >= 11.0
+# - Children 5-11y: Normal >= 11.5
+# - Children 12-14y & Women 15+: Normal >= 12.0
+# - Men 15+: Normal >= 13.0
 
 NORMAL_HEMOGLOBIN_RANGES = {
-    ("M",  0, 10): (11.0, 13.5),
-    ("F",  0, 10): (11.0, 13.5),
-
-    ("M", 11, 17): (12.5, 16.5),
-    ("F", 11, 17): (12.0, 15.5),
-
-    ("M", 18, 200): (13.0, 17.0),
-    ("F", 18, 200): (12.0, 15.0),
+    # (Gender, Age_Min, Age_Max, Is_Pregnant): (Min_Normal, Max_Normal)
+    ("M",  0,  4, False): (11.0, 14.0),
+    ("F",  0,  4, False): (11.0, 14.0),
+    
+    ("M",  5, 11, False): (11.5, 14.5),
+    ("F",  5, 11, False): (11.5, 14.5),
+    
+    ("M", 12, 14, False): (12.0, 15.0),
+    ("F", 12, 14, False): (12.0, 15.0),
+    
+    ("M", 15, 200, False): (13.0, 17.0),
+    ("F", 15, 200, False): (12.0, 15.5),
+    
+    ("F", 0, 200, True): (11.0, 14.5), # Pregnant women
 }
+
+# Specific thresholds for Anemia Severity (Mild, Moderate, Severe)
+# Values are upper bounds for each category.
+SEVERITY_THRESHOLDS = {
+    "children_6_59m":    {"severe": 7.0, "moderate": 10.0, "mild": 11.0},
+    "children_5_11y":    {"severe": 8.0, "moderate": 11.0, "mild": 11.5},
+    "children_12_14y":   {"severe": 8.0, "moderate": 11.0, "mild": 12.0},
+    "women_non_pregnant": {"severe": 8.0, "moderate": 11.0, "mild": 12.0},
+    "women_pregnant":    {"severe": 7.0, "moderate": 10.0, "mild": 11.0},
+    "men_15_plus":       {"severe": 8.0, "moderate": 11.0, "mild": 13.0},
+}
+
 
 
 # ─────────────────────────────────────────────

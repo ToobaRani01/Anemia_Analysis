@@ -390,6 +390,10 @@ with st.sidebar:
     with col2:
         gender = st.radio("Gender", options=["Male", "Female"], horizontal=True)
     
+    is_pregnant = False
+    if gender == "Female":
+        is_pregnant = st.checkbox("🤰 Is Pregnant?", value=False)
+    
     st.divider()
     
     st.markdown("### 📋 Hemoglobin Reference Ranges")
@@ -425,11 +429,12 @@ with st.sidebar:
     </style>
     
     <div class="ref-table">
-    <div class="ref-item"><span class="ref-label">👶 Children (0-10y):</span> <span class="ref-range">11.0 – 13.5 g/dL</span></div>
-    <div class="ref-item"><span class="ref-label">👦 Boys (11-17y):</span> <span class="ref-range">12.5 – 16.5 g/dL</span></div>
-    <div class="ref-item"><span class="ref-label">👧 Girls (11-17y):</span> <span class="ref-range">12.0 – 15.5 g/dL</span></div>
-    <div class="ref-item"><span class="ref-label">👨 Men (18+y):</span> <span class="ref-range">13.0 – 17.0 g/dL</span></div>
-    <div class="ref-item"><span class="ref-label">👩 Women (18+y):</span> <span class="ref-range">12.0 – 15.0 g/dL</span></div>
+    <div class="ref-item"><span class="ref-label">👶 Children (6-59m):</span> <span class="ref-range">≥ 11.0 g/dL</span></div>
+    <div class="ref-item"><span class="ref-label">👦 Children (5-11y):</span> <span class="ref-range">≥ 11.5 g/dL</span></div>
+    <div class="ref-item"><span class="ref-label">👧 Children (12-14y):</span> <span class="ref-range">≥ 12.0 g/dL</span></div>
+    <div class="ref-item"><span class="ref-label">👩 Women (15y+):</span> <span class="ref-range">≥ 12.0 g/dL</span></div>
+    <div class="ref-item"><span class="ref-label">🤰 Pregnant Women:</span> <span class="ref-range">≥ 11.0 g/dL</span></div>
+    <div class="ref-item"><span class="ref-label">👨 Men (15y+):</span> <span class="ref-range">≥ 13.0 g/dL</span></div>
     </div>
     """, unsafe_allow_html=True)
     
@@ -482,7 +487,7 @@ if uf:
                     scaler = get_scaler()
                     inputs = prepare_inference_inputs({IMAGE_TYPES[0]: img}, age, gender)
                     hgb = predict_hemoglobin(model, inputs, scaler)
-                    result = classify_anemia(hgb, age, gender)
+                    result = classify_anemia(hgb, age, gender, is_pregnant)
                     
                     st.session_state.analysis_result = {
                         "hgb": hgb,
@@ -538,23 +543,26 @@ if "analysis_result" in st.session_state:
         """, unsafe_allow_html=True)
         
     with c2:
-        status_text = "ANEMIC" if result["is_anemic"] else ("ELEVATED" if result["is_high"] else "HEALTHY")
+        status_text = "ANEMIC" if result["is_anemic"] else "NON-ANEMIC"
         st.markdown(f"""
         <div class="result-card">
             <h4>Clinical Status</h4>
             <div class="severity-badge" style="background:{color}">{emoji} {sev}</div>
-            <p><strong>{status_text}</strong></p>
+            <p><strong style="font-size: 1.2rem;">{status_text}</strong></p>
         </div>
         """, unsafe_allow_html=True)
         
     with c3:
+        risk_label = "ANEMIC" if result["is_anemic"] or prob > 50 else "NON-ANEMIC"
         st.markdown(f"""
         <div class="result-card">
             <h4>Anemia Risk</h4>
             <div class="hgb-value">{prob}%</div>
-            <p>Probability</p>
+            <p><strong>{risk_label}</strong></p>
+            <small>Probability Score</small>
         </div>
         """, unsafe_allow_html=True)
+
 
     # Plotly Gauge
     fig = go.Figure(go.Indicator(

@@ -92,11 +92,12 @@ Diagnosis is based on the following clinically validated reference ranges. Value
 
 | Category | Age Bracket | Normal Range |
 | :--- | :--- | :--- |
-| Children | 0 – 10 yrs | 11.0 - 13.5 |
-| Adolescent Boys | 11 – 17 yrs | 12.5 - 16.5 |
-| Adolescent Girls | 11 – 17 yrs | 12.0 - 15.5 |
-| Adult Men | 18+ yrs | 13.0 - 17.0 |
-| Adult Women | 18+ yrs | 12.0 - 15.0 |
+| Children | 6 – 59 months | ≥ 11.0 g/dL |
+| Children | 5 – 11 yrs | ≥ 11.5 g/dL |
+| Children | 12 – 14 yrs | ≥ 12.0 g/dL |
+| Non-pregnant Women | 15+ yrs | ≥ 12.0 g/dL |
+| Pregnant Women | All ages | ≥ 11.0 g/dL |
+| Men | 15+ yrs | ≥ 13.0 g/dL |
 
 ## Technologies & Libraries
 
@@ -208,4 +209,4 @@ For issues, questions, or suggestions:
 **Last Updated**: March 2026  
 **Version**: 1.0.0  
 **Status**: Active & Maintained
-
+**Develop by** : Tooba Rani

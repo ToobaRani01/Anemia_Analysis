@@ -11,7 +11,7 @@ import tensorflow as tf
 
 from config import (
     IMG_SIZE, IMAGE_TYPES,
-    NORMAL_HEMOGLOBIN_RANGES,
+    NORMAL_HEMOGLOBIN_RANGES, SEVERITY_THRESHOLDS,
     MODEL_PATH, SCALER_PATH
 )
 
@@ -20,30 +20,54 @@ from config import (
 # ANEMIA CLASSIFICATION
 # ──────────────────────────────────────────────────────────────
 
-def get_normal_range(age: int, gender: str) -> tuple:
-    """Return (min_hb, max_hb) for given age & gender."""
+def get_normal_range(age: int, gender: str, is_pregnant: bool = False) -> tuple:
+    """Return (min_hb, max_hb) for given age, gender & pregnancy status."""
     g = "M" if str(gender).strip().lower() in ("m", "male", "1") else "F"
     age = int(age)
-    for (gen, min_a, max_a), (min_h, max_h) in NORMAL_HEMOGLOBIN_RANGES.items():
-        if gen == g and min_a <= age <= max_a:
+    
+    # Priority to pregnancy if applicable
+    if g == "F" and is_pregnant:
+        for (gen, min_a, max_a, preg), (min_h, max_h) in NORMAL_HEMOGLOBIN_RANGES.items():
+            if preg:
+                return min_h, max_h
+
+    for (gen, min_a, max_a, preg), (min_h, max_h) in NORMAL_HEMOGLOBIN_RANGES.items():
+        if gen == g and min_a <= age <= max_a and preg == False:
             return min_h, max_h
+            
     return 12.0, 15.0  # safe default
 
 
-def classify_anemia(hgb: float, age: int, gender: str) -> dict:
-    """Returns a full classification dict using WHO range-based logic."""
-    min_hb, max_hb = get_normal_range(age, gender)
-
-    is_anemic = hgb < min_hb
+def classify_anemia(hgb: float, age: int, gender: str, is_pregnant: bool = False) -> dict:
+    """Returns a full classification dict using specific thresholds for each category."""
+    min_hb, max_hb = get_normal_range(age, gender, is_pregnant)
+    
+    # Determine the category for thresholds
+    cat = "men_15_plus" if gender.lower() == "male" and age >= 15 else "women_non_pregnant"
+    if age < 5:
+        cat = "children_6_59m"
+    elif 5 <= age <= 11:
+        cat = "children_5_11y"
+    elif 12 <= age <= 14:
+        cat = "children_12_14y"
+    
+    if gender.lower() == "female":
+        if is_pregnant:
+            cat = "women_pregnant"
+        elif age >= 15:
+            cat = "women_non_pregnant"
+            
+    t = SEVERITY_THRESHOLDS.get(cat, SEVERITY_THRESHOLDS["women_non_pregnant"])
+    
+    is_anemic = hgb < t["mild"]
     is_high   = hgb > max_hb
 
     if is_anemic:
-        deficit = min_hb - hgb
-        if deficit > 4:   severity = "Severe"
-        elif deficit > 2: severity = "Moderate"
-        else:             severity = "Mild"
+        if hgb < t["severe"]:     severity = "Severe"
+        elif hgb < t["moderate"]: severity = "Moderate"
+        else:                     severity = "Mild"
     elif is_high:
-        severity = "Severe"
+        severity = "Normal" # "agr ziyada h jo k normal h us ko set rhne do" - interpreting as Normal/High but not Anemic
     else:
         severity = "Normal"
 
@@ -58,6 +82,7 @@ def classify_anemia(hgb: float, age: int, gender: str) -> dict:
         "anemia_probability": round(anemia_probability * 100, 1),
         "min_hb":             min_hb,
         "max_hb":             max_hb,
+        "category":           cat
     }
 
 
