@@ -23,7 +23,6 @@ anemia_project/
 ├── src/
 │   ├── config.py             # Demographic thresholds & constants
 │   ├── data_loader.py        # Dataset processing
-│   ├── model.py              # EfficientNet-B0 architecture
 │   └── utils.py              # Anemic status, risk, & Severity (0-3) logic
 │
 ├── models/
@@ -31,8 +30,7 @@ anemia_project/
 │   ├── anemia_model.tflite   # Android-ready converted model
 │   └── hgb_scaler.pkl        # Inverse scaler for hemoglobin g/dL
 │
-├── app_integration.md        # Technical mobile guide (Java code)
-├── mobile_app_integration.md # Simple mobile guide (Logic workflow)
+├── mobile_app_integration.md # Technical mobile guide (Java code) and Simple mobile guide (Logic workflow)
 ├── app.py                    # Streamlit Web UI Dashboard
 └── requirements.txt
 ```
