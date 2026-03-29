@@ -6,40 +6,34 @@
 
 The system analyzes ocular imaging data and employs clinically validated hemoglobin ranges to classify patient health status, supporting informed clinical decision-making and patient care optimization.
 
-## Features
-
-- 🔬 **AI-Powered Prediction**: Uses EfficientNet-B0 deep learning model for accurate hemoglobin level estimation
-- 🌍 **Multi-Regional Dataset**: Trained on diverse datasets from India and Italy for improved generalization
-- 📊 **Clinical Classification**: Automatic categorization based on age-specific hemoglobin ranges
-- 🎯 **High Accuracy**: Optimized model achieving robust performance across different demographics
-- 🚀 **Easy-to-Use Interface**: Interactive Streamlit web application for quick predictions
-- 📈 **Comprehensive Analysis**: Detailed reporting with classification of Anemia, Normal, and High Hemoglobin levels
-- ☁️ **Cloud Deployment**: Live application accessible at https://anemiaanalysis-toobarani.streamlit.app/
 
 ## Project Structure
-```
+```text
 anemia_project/
 ├── dataset/
-│   ├── India/              # Images organized by patient folder
-│   │   ├── ...
-│   │   └── India.xlsx      # Label file
+│   ├── India/                # Images organized by patient folder
+│   │   └── India.xlsx        # India dataset labels
 │   └── Italy/
-│       ├── ...
-│       └── Italy.xlsx
+│       └── Italy.xlsx        # Italy dataset labels
 │
 ├── notebooks/
-│   └── final_training.ipynb # Main training source (Data Load -> Training)
+│   ├── final_training.ipynb  # Main training source (Data Load -> Training)
+│   └── convert_intotflite.ipynb # TFLite format conversion
 │
 ├── src/
-│   ├── config.py           # Range configurations & constants
-│   ├── data_loader.py      # Dataset processing
-│   ├── model.py            # EfficientNet-B0 architecture
-│   └── utils.py            # Range-based classification & inference
+│   ├── config.py             # Demographic thresholds & constants
+│   ├── data_loader.py        # Dataset processing
+│   ├── model.py              # EfficientNet-B0 architecture
+│   └── utils.py              # Anemic status, risk, & Severity (0-3) logic
 │
 ├── models/
-│   └── anemia_model.h5     # Trained EfficientNet model
+│   ├── anemia_model.h5       # Trained EfficientNet model
+│   ├── anemia_model.tflite   # Android-ready converted model
+│   └── hgb_scaler.pkl        # Inverse scaler for hemoglobin g/dL
 │
-├── app.py                  # Streamlit UI
+├── app_integration.md        # Technical mobile guide (Java code)
+├── mobile_app_integration.md # Simple mobile guide (Logic workflow)
+├── app.py                    # Streamlit Web UI Dashboard
 └── requirements.txt
 ```
 
@@ -84,26 +78,26 @@ The application will open in your default browser at `http://localhost:8501/`
 
 
 
-# 📱 Mobile / Android Integration
+## 📱 Mobile / Android Integration
     
 ### ⚠️ Important Note for Mobile Developers
-If you want to integrate this model into an Android or any mobile application, you cannot use the .h5 file directly.
-The .h5 format is a Keras/TensorFlow format designed for server-side or desktop use.
-Mobile apps require the TensorFlow Lite (.tflite) format.
+If you want to integrate this model into an Android or any mobile application, you cannot use the `.h5` file directly. The `.h5` format is designed for server-side or desktop use. Mobile apps require the TensorFlow Lite (`.tflite`) format.
     
 ### ✅ Use the Pre-converted TFLite Model
- This repository already includes the converted model:
+This repository already includes the mathematically verified converted model:
 
 ```bash
-    anemia_model.tflite
+models/anemia_model.tflite
 ```
 
-This file was generated using the convert_intotflite.ipynb notebook. You can use it directly in your Android app
-without any additional conversion steps.
+This file was generated using the `convert_intotflite.ipynb` notebook. You can use it directly in your Android app without any additional conversion steps.
    
-# 📲 Android Integration Guide
-For a complete step-by-step guide on integrating fetal_ultrasound.tflite into an Android application, see:
-👉 [mobile_app_integration.md](mobile_app_integration.md)
+### 📲 Android Integration Guides
+
+For a complete step-by-step guide on integrating the `anemia_model.tflite` model into an Android application (including predicting Hemoglobin, checking Anemia Status, assigning Severity 0-3, and calculating Risk %), please refer to the following files:
+
+- 💻 **[Technical Java Guide (app_integration.md)](app_integration.md)**: Includes the exact Java boilerplate, matrix loading, and math functions required for deployment.
+- 🧠 **[Simple Logic Guide (mobile_app_integration.md)](mobile_app_integration.md)**: A non-technical, simple workflow explainer detailing how model predictions turn into clinical grades.
 
 
 
@@ -112,7 +106,7 @@ For a complete step-by-step guide on integrating fetal_ultrasound.tflite into an
 1. **Upload an Image**: Select a medical eye scan image from your device
 2. **Input Patient Details**: Enter patient's age group for accurate classification
 3. **Get Prediction**: The model predicts hemoglobin level with confidence score
-4. **View Results**: Receive classification (Normal/Mild Anemia /Moderate Anemia/High Anemia) based on clinical ranges
+4. **View Results**: Receive dynamic classification (Grade 0: Normal, Grade 1: Mild, Grade 2: Moderate, Grade 3: Severe) and Risk % probability based on clinical ranges.
 
 
 ## Normal Hemoglobin Ranges (g/dL)
@@ -162,14 +156,7 @@ Diagnosis is based on the following clinically validated reference ranges. Value
 - **Solution**: Ensure images are in supported formats (JPG, PNG) with reasonable file size
 
 
-## Support & Contact
 
-For issues, questions, or suggestions:
-- 📧 Report bugs or feature requests through the project repository
-- 🌐 Access the live application: https://anemiaanalysis-toobarani.streamlit.app/
-- 📚 Refer to the comprehensive notebooks for implementation details
-
----
 
 **Last Updated**: March 2026  
 **Version**: 1.0.0  
