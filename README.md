@@ -94,7 +94,7 @@ This file was generated using the `convert_intotflite.ipynb` notebook. You can u
 
 For a complete step-by-step guide on integrating the `anemia_model.tflite` model into an Android application (including predicting Hemoglobin, checking Anemia Status, assigning Severity 0-3, and calculating Risk %), please refer to the following files:
 
-- 💻 **[Technical Java Guide (app_integration.md)](app_integration.md)**: Includes the exact Java boilerplate, matrix loading, and math functions required for deployment.
+- 💻 **[Technical Java Guide (app_integration.md)](mobile_app_integration.md)**: Includes the exact Java boilerplate, matrix loading, and math functions required for deployment.
 - 🧠 **[Simple Logic Guide (mobile_app_integration.md)](mobile_app_integration.md)**: A non-technical, simple workflow explainer detailing how model predictions turn into clinical grades.
 
 
