@@ -12,7 +12,7 @@ import tensorflow as tf
 from config import (
     IMG_SIZE, IMAGE_TYPES,
     NORMAL_HEMOGLOBIN_RANGES, SEVERITY_THRESHOLDS,
-    MODEL_PATH, SCALER_PATH
+    MODEL_PATH, SCALER_PATH, SEVERITY_LABELS
 )
 
 
@@ -63,13 +63,13 @@ def classify_anemia(hgb: float, age: int, gender: str, is_pregnant: bool = False
     is_high   = hgb > max_hb
 
     if is_anemic:
-        if hgb < t["severe"]:     severity = "Severe"
-        elif hgb < t["moderate"]: severity = "Moderate"
-        else:                     severity = "Mild"
+        if hgb < t["severe"]:     severity = 3
+        elif hgb < t["moderate"]: severity = 2
+        else:                     severity = 1
     elif is_high:
-        severity = "Normal" # "agr ziyada h jo k normal h us ko set rhne do" - interpreting as Normal/High but not Anemic
+        severity = 0
     else:
-        severity = "Normal"
+        severity = 0
 
     dist = min_hb - hgb
     k = 2.5
@@ -186,19 +186,31 @@ def load_model(model_path: str = MODEL_PATH):
 # COLOUR HELPERS FOR UI
 # ──────────────────────────────────────────────────────────────
 
-def severity_color(severity: str) -> str:
-    return {
+def severity_color(severity) -> str:
+    # Handle both string (legacy/direct) and numeric values
+    mapping = {
+        0:          "#2ECC71",
         "Normal":   "#2ECC71",
+        1:          "#F39C12",
         "Mild":     "#F39C12",
+        2:          "#E67E22",
         "Moderate": "#E67E22",
+        3:          "#E74C3C",
         "Severe":   "#E74C3C",
-    }.get(severity, "#95A5A6")
+    }
+    return mapping.get(severity, "#95A5A6")
 
 
-def severity_emoji(severity: str) -> str:
-    return {
+def severity_emoji(severity) -> str:
+    # Handle both string (legacy/direct) and numeric values
+    mapping = {
+        0:          "✅",
         "Normal":   "✅",
+        1:          "⚠️",
         "Mild":     "⚠️",
+        2:          "🔶",
         "Moderate": "🔶",
+        3:          "🔴",
         "Severe":   "🔴",
-    }.get(severity, "❓")
+    }
+    return mapping.get(severity, "❓")

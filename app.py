@@ -13,7 +13,7 @@ import plotly.graph_objects as go
 # Make src/ importable when app.py lives inside src/
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "src"))
 
-from config import MODEL_PATH, SCALER_PATH, IMAGE_TYPES
+from config import MODEL_PATH, SCALER_PATH, IMAGE_TYPES, SEVERITY_LABELS
 from utils import (
     load_model, load_scaler,
     prepare_inference_inputs, predict_hemoglobin,
@@ -544,10 +544,12 @@ if "analysis_result" in st.session_state:
         
     with c2:
         status_text = "ANEMIC" if result["is_anemic"] else "NON-ANEMIC"
+        badge_text = f"{sev} ({SEVERITY_LABELS.get(sev, 'Unknown')})"
+        
         st.markdown(f"""
         <div class="result-card">
             <h4>Clinical Status</h4>
-            <div class="severity-badge" style="background:{color}">{emoji} {sev}</div>
+            <div class="severity-badge" style="background:{color}">{emoji} {badge_text}</div>
             <p><strong style="font-size: 1.2rem;">{status_text}</strong></p>
         </div>
         """, unsafe_allow_html=True)
@@ -594,6 +596,7 @@ if "analysis_result" in st.session_state:
     
     if result["is_anemic"]:
         deficit = m_min - hgb
+        classification_text = f"{sev} ({SEVERITY_LABELS.get(sev, 'Unknown')} Anemia)"
         st.markdown(f"""
         <div style="color: #000000; background: #fff3cd; padding: 2rem; border-radius: 15px; border-left: 5px solid #f59e0b;">
         <h3 style="color: #dc2626; font-weight: 900; margin-bottom: 1rem;">🔴 Anemia Risk Detected</h3>
@@ -602,7 +605,7 @@ if "analysis_result" in st.session_state:
         <h4 style="color: #7c3aed; font-weight: 800; margin: 1.5rem 0 1rem 0;">Key Findings:</h4>
         <ul style="font-size: 1rem; line-height: 1.8;">
         <li><strong style="color: #dc2626;">Deficit:</strong> <span style="color: #dc2626; font-weight: 700;">{deficit:.1f} g/dL</span> below the normal minimum.</li>
-        <li><strong style="color: #ea580c;">Classification:</strong> <span style="color: #ea580c; font-weight: 700;">{sev} Anemia</span>.</li>
+        <li><strong style="color: #ea580c;">Classification:</strong> <span style="color: #ea580c; font-weight: 700;">{classification_text}</span>.</li>
         <li><strong style="color: #059669;">Confidence:</strong> <span style="color: #059669; font-weight: 700;">{prob}%</span> probability of low hemoglobin.</li>
         </ul>
         
@@ -639,7 +642,7 @@ if "analysis_result" in st.session_state:
         
         <h4 style="color: #7c3aed; font-weight: 800; margin: 1.5rem 0 1rem 0;">Summary:</h4>
         <ul style="font-size: 1rem; line-height: 1.8;">
-        <li><strong style="color: #059669;">Status:</strong> <span style="color: #059669; font-weight: 700;">{sev} (Normal)</span></li>
+        <li><strong style="color: #059669;">Status:</strong> <span style="color: #059669; font-weight: 700;">0 (Normal)</span></li>
         <li><strong style="color: #10b981;">Risk Level:</strong> <span style="color: #10b981; font-weight: 700;">Minimal probability of anemia ({prob}%)</span>.</li>
         </ul>
         

@@ -84,7 +84,17 @@ SEVERITY_THRESHOLDS = {
     "children_12_14y":   {"severe": 8.0, "moderate": 11.0, "mild": 12.0},
     "women_non_pregnant": {"severe": 8.0, "moderate": 11.0, "mild": 12.0},
     "women_pregnant":    {"severe": 7.0, "moderate": 10.0, "mild": 11.0},
-    "men_15_plus":       {"severe": 8.0, "moderate": 11.0, "mild": 13.0},
+    "men_15_plus":       {"severe": 8.0, "moderate": 11.0, "mild": 11.9},
+}
+
+# ─────────────────────────────────────────────
+# SEVERITY LABEL MAPPING
+# ─────────────────────────────────────────────
+SEVERITY_LABELS = {
+    0: "Normal",
+    1: "Mild",
+    2: "Moderate",
+    3: "Severe"
 }
 
 

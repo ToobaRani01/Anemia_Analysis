@@ -43,49 +43,77 @@ anemia_project/
 └── requirements.txt
 ```
 
-## Setup & Run
+## Dataset Information
+
+The system is trained on comprehensive medical datasets from multiple regions:
+
+### India Dataset
+- **Samples**: 95 patient cases
+- **Structure**: Organized by patient ID folders
+- **Labels**: India.xlsx containing hemoglobin measurements
+
+### Italy Dataset
+- **Samples**: 123 patient cases
+- **Structure**: Organized by patient ID folders
+- **Labels**: Italy.xlsx containing hemoglobin measurements
+
+Total samples provide diverse demographic coverage for robust model generalization.
+
+
+## 🚀 Getting Started (Web app )
 
 ### Prerequisites
-- **Python 3.8+** installed on your system
-- **Git** for version control
-- **pip** package manager
+- Ensure you have Python 3.9+ installed. 
+
 
 ### 1. Install Dependencies
-Clone the repository and install all required packages:
 ```bash
-git clone <repository-url>
-cd Anemia_prediction
 pip install -r requirements.txt
 ```
 
-### 2. Model Training (Optional)
-To retrain the model with your own data:
-1. Prepare your dataset in the `dataset/` directory with proper folder structure
-2. Open and execute the [Jupyter Notebook](notebooks/final_training.ipynb)
-3. The notebook includes:
-   - Data loading from multiple regions
-   - Image preprocessing and normalization (MinMaxScaler)
-   - EfficientNet-B0 model architecture and training
-   - Model evaluation and validation
-4. The trained model will be saved to `models/` directory
-
-### 3. Launch Application
+### 2. Launch Application
 Start the interactive web application:
 ```bash
 streamlit run app.py
 ```
-
 The application will open in your default browser at `http://localhost:8501/`
 
 **Live Demo:** https://anemiaanalysis-toobarani.streamlit.app/
+
+
+
+
+
+# 📱 Mobile / Android Integration
+    
+### ⚠️ Important Note for Mobile Developers
+If you want to integrate this model into an Android or any mobile application, you cannot use the .h5 file directly.
+The .h5 format is a Keras/TensorFlow format designed for server-side or desktop use.
+Mobile apps require the TensorFlow Lite (.tflite) format.
+    
+### ✅ Use the Pre-converted TFLite Model
+ This repository already includes the converted model:
+
+```bash
+    anemia_model.tflite
+```
+
+This file was generated using the convert_intotflite.ipynb notebook. You can use it directly in your Android app
+without any additional conversion steps.
+   
+# 📲 Android Integration Guide
+For a complete step-by-step guide on integrating fetal_ultrasound.tflite into an Android application, see:
+👉 [mobile_app_integration.md](mobile_app_integration.md)
+
+
 
 ## Usage
 
 1. **Upload an Image**: Select a medical eye scan image from your device
 2. **Input Patient Details**: Enter patient's age group for accurate classification
 3. **Get Prediction**: The model predicts hemoglobin level with confidence score
-4. **View Results**: Receive classification (Anemia/Normal/High) based on clinical ranges
-5. **Download Report**: Export the analysis results as needed
+4. **View Results**: Receive classification (Normal/Mild Anemia /Moderate Anemia/High Anemia) based on clinical ranges
+
 
 ## Normal Hemoglobin Ranges (g/dL)
 Diagnosis is based on the following clinically validated reference ranges. Values below the minimum indicate anemia, while values exceeding the maximum are flagged as High/Severe hemoglobin levels.
@@ -109,21 +137,6 @@ Diagnosis is based on the following clinically validated reference ranges. Value
 - **Data Management**: Excel (XLSX)
 - **Python Version**: 3.8+
 
-## Dataset Information
-
-The system is trained on comprehensive medical datasets from multiple regions:
-
-### India Dataset
-- **Samples**: 95 patient cases
-- **Structure**: Organized by patient ID folders
-- **Labels**: India.xlsx containing hemoglobin measurements
-
-### Italy Dataset
-- **Samples**: 123 patient cases
-- **Structure**: Organized by patient ID folders
-- **Labels**: Italy.xlsx containing hemoglobin measurements
-
-Total samples provide diverse demographic coverage for robust model generalization.
 
 ## Model Architecture
 
@@ -135,48 +148,7 @@ Total samples provide diverse demographic coverage for robust model generalizati
 - **Optimizer**: Adam with learning rate scheduling
 - **Loss Function**: Mean Squared Error (MSE)
 
-## File Descriptions
 
-| File/Folder | Purpose |
-| :--- | :--- |
-| `app.py` | Main Streamlit web application |
-| `src/config.py` | Clinical ranges and system configuration |
-| `src/data_loader.py` | Dataset loading and preprocessing pipeline |
-| `src/model.py` | EfficientNet-B0 model definition |
-| `src/utils.py` | Utility functions for classification and inference |
-| `notebooks/final_training.ipynb` | Complete training pipeline and experimentation |
-| `models/efficientnet_b0_anemia.h5` | Pre-trained model weights |
-| `dataset/` | Training data (India & Italy datasets) |
-
-## Key Features of the System
-
-1. **Multi-Region Training**: Model trained on geographically diverse datasets
-2. **Age-Specific Classification**: Different thresholds for different age groups
-3. **Continuous Prediction**: Outputs precise hemoglobin values, not just binary classification
-4. **User-Friendly Interface**: Interactive Streamlit app with real-time predictions
-5. **Scalable Architecture**: Can be extended with additional datasets and regions
-
-## Performance Metrics
-
-The model achieves strong performance across validation datasets:
-- Handles diverse image qualities and patient demographics
-- Provides confidence-based predictions
-- Robust classification with clinical accuracy
-
-## Future Enhancements
-
-- [ ] Integration with hospital management systems
-- [ ] Mobile application development
-- [ ] Multi-language support
-- [ ] Advanced statistical reporting
-- [ ] Integration with electronic health records (EHR)
-- [ ] Continuous model retraining with new data
-
-## Important Disclaimer
-
-This system is designed as a **diagnostic support tool** and should **NOT** be used as a substitute for professional medical advice. Always consult qualified healthcare professionals for accurate diagnosis and treatment decisions. The predictions are based on trained models and should be validated with clinical laboratory tests.
-
-## Troubleshooting
 
 ### Common Issues
 
@@ -189,13 +161,6 @@ This system is designed as a **diagnostic support tool** and should **NOT** be u
 **Issue**: Image upload errors
 - **Solution**: Ensure images are in supported formats (JPG, PNG) with reasonable file size
 
-## Contributors
-
-This project was developed with contributions from medical imaging and machine learning experts to improve early detection and diagnosis of anemia.
-
-## License
-
-This project is provided for educational and research purposes. Usage in commercial settings requires appropriate authorization.
 
 ## Support & Contact
 
